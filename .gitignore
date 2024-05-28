@@ -41,3 +41,30 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Flutter related
+.packages
+build/
+ios/Flutter/.last_build_id
+
+# Visual Studio Code related
+.vscode/
+
+# Windows related
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+
+# Flutter generated plugins
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Miscellaneous
+*.swo
+
+# Build related
+pubspec.lock
