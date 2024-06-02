@@ -4,12 +4,12 @@ import 'goal_event.dart';
 import 'goal_state.dart';
 
 class GoalBloc extends Bloc<GoalEvent, GoalState> {
-  GoalBloc() : super(GoalState(
+  GoalBloc() : super(const GoalState(
     detectedActivity: 'Unknown',
     goals: {
-      'Running': Goal(activity: 'Running', distances: const [1, 5, 10], selectedDistance: 1),
-      'Walking': Goal(activity: 'Walking', distances: const [1, 5, 10], selectedDistance: 1),
-      'Cycling': Goal(activity: 'Cycling', distances: const [5, 10, 20], selectedDistance: 5),
+      'Running': Goal(activity: 'Running', distances: [1, 5, 10], selectedDistance: 1),
+      'Walking': Goal(activity: 'Walking', distances: [1, 5, 10], selectedDistance: 1),
+      'Cycling': Goal(activity: 'Cycling', distances: [5, 10, 20], selectedDistance: 5),
     },
   )) {
     on<SelectDistance>((event, emit) {
