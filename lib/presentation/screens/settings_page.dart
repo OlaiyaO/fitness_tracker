@@ -75,7 +75,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildDistanceOptions() {
     return BlocBuilder<GoalBloc, GoalState>(
       builder: (context, state) {
-        final goal = state.detectedActivity != null ? state.goals[state.detectedActivity!] : null;
+        final goal = state.detectedActivity != null ? state.goals[state.detectedActivity] : null;
         return goal != null
             ? Column(
           crossAxisAlignment: CrossAxisAlignment.start,

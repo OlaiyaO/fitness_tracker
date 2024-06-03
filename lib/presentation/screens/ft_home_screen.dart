@@ -1,6 +1,7 @@
 import 'package:fitness_tracker/presentation/screens/settings_page.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/map_widget.dart';
 import '../widgets/settings_icon_widget.dart';
 import 'history_screen.dart';
 
@@ -14,7 +15,7 @@ class FTApp extends StatelessWidget {
       title: 'Flutter Demo',
       initialRoute: '/',
       routes: {
-        '/': (context) => const MyHomeScreen(title: 'Fitness Tracker',),
+        // '/': (context) => const MyHomeScreen(title: 'Fitness Tracker',),
         '/settings': (context) => const SettingsPage(),
       },
       theme: ThemeData(
@@ -39,8 +40,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = const [
-    //MapWidget(),
-    Placeholder(),
+    MapWidget(),
     HistoryScreen(),
   ];
 
@@ -75,6 +75,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: _currentIndex == 0 ? FloatingActionButton.extended(
         onPressed: () {
           // TODO: Implement start button

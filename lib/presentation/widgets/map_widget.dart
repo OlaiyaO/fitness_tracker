@@ -14,8 +14,8 @@ class MapWidgetState extends State<MapWidget> {
   Completer<GoogleMapController>();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+    target: LatLng(8.2193, 5.5066),
+    zoom: 12,
   );
 
   @override
