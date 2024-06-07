@@ -22,7 +22,7 @@ class FTApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomeScreen(title: 'Flutter Demo Home Page'),
+      home: const MyHomeScreen(title: 'Fitness Tracker'),
     );
   }
 }
@@ -78,7 +78,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: _currentIndex == 0 ? FloatingActionButton.extended(
         onPressed: () {
-          // TODO: Implement start button
         },
         label: const Text('Start'),
         icon: const Icon(Icons.not_started_outlined),
