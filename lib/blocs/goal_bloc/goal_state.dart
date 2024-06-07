@@ -1,25 +1,44 @@
 import 'package:equatable/equatable.dart';
-import '../../data/models/goal_model.dart';
 
 class GoalState extends Equatable {
-  final String detectedActivity;
-  final Map<String, Goal> goals;
+  final double walkingValue;
+  final double runningValue;
+  final double cyclingValue;
+  final bool isLoading;
+  final String? error;
 
   const GoalState({
-    required this.detectedActivity,
-    required this.goals,
+    required this.walkingValue,
+    required this.runningValue,
+    required this.cyclingValue,
+    this.isLoading = false,
+    this.error,
   });
 
+  factory GoalState.initial() {
+    return const GoalState(
+      walkingValue: 1,
+      runningValue: 2,
+      cyclingValue: 5,
+    );
+  }
+
   GoalState copyWith({
-    String? detectedActivity,
-    Map<String, Goal>? goals,
+    double? walkingValue,
+    double? runningValue,
+    double? cyclingValue,
+    bool? isLoading,
+    String? error,
   }) {
     return GoalState(
-      detectedActivity: detectedActivity ?? this.detectedActivity,
-      goals: goals ?? this.goals,
+      walkingValue: walkingValue ?? this.walkingValue,
+      runningValue: runningValue ?? this.runningValue,
+      cyclingValue: cyclingValue ?? this.cyclingValue,
+      isLoading: isLoading ?? this.isLoading,
+      error: error,
     );
   }
 
   @override
-  List<Object> get props => [detectedActivity, goals];
+  List<Object?> get props => [walkingValue, runningValue, cyclingValue, isLoading, error];
 }

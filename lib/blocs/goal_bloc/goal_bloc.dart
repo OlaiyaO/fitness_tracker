@@ -1,25 +1,32 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/models/goal_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'goal_event.dart';
 import 'goal_state.dart';
 
 class GoalBloc extends Bloc<GoalEvent, GoalState> {
-  GoalBloc() : super(const GoalState(
-    detectedActivity: 'Unknown',
-    goals: {
-      'Running': Goal(activity: 'Running', distances: [1, 5, 10], selectedDistance: 1),
-      'Walking': Goal(activity: 'Walking', distances: [1, 5, 10], selectedDistance: 1),
-      'Cycling': Goal(activity: 'Cycling', distances: [5, 10, 20], selectedDistance: 5),
-    },
-  )) {
-    on<SelectDistance>((event, emit) {
-      final goals = Map<String, Goal>.from(state.goals);
-      goals[event.activity] = goals[event.activity]!.copyWith(selectedDistance: event.distance);
-      emit(state.copyWith(goals: goals));
-    });
+  GoalBloc() : super(GoalState.initial());
 
-    on<ActivityDetected>((event, emit) {
-      emit(state.copyWith(detectedActivity: event.activity));
-    });
+  Stream<GoalState> mapEventToState(GoalEvent event) async* {
+    if (event is FetchGoalValues) {
+      yield state.copyWith(isLoading: true);
+      try {
+        final firestore = FirebaseFirestore.instance;
+        final snapshot = await firestore.collection('goals').doc('userGoals').get();
+        final data = snapshot.data();
+        if (data != null) {
+          yield state.copyWith(
+            walkingValue: data['walking'] ?? 1,
+            runningValue: data['running'] ?? 1,
+            cyclingValue: data['cycling'] ?? 1,
+            isLoading: false,
+          );
+        } else {
+          yield state.copyWith(isLoading: false);
+        }
+      } catch (error) {
+        yield state.copyWith(isLoading: false, error: error.toString());
+      }
+    }
   }
 }

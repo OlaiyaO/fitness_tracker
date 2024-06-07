@@ -1,102 +1,60 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_activity_recognition/flutter_activity_recognition.dart';
+import 'package:fitness_tracker/presentation/widgets/goal_setter.dart';
 import '../../blocs/goal_bloc/goal_bloc.dart';
 import '../../blocs/goal_bloc/goal_event.dart';
 import '../../blocs/goal_bloc/goal_state.dart';
 
-
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
-  @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
+  static const String kWalking = 'Walking';
+  static const String kRunning = 'Running';
+  static const String kCycling = 'Cycling';
 
-class _SettingsPageState extends State<SettingsPage> {
-  late FlutterActivityRecognition _activityRecognition;
-  late Stream<Activity> _activityStream;
-  late StreamSubscription<Activity> _activitySubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _activityRecognition = FlutterActivityRecognition.instance;
-    _activityStream = _activityRecognition.activityStream;
-    _activitySubscription = _activityStream.listen(_onActivityDetected);
-  }
-
-  void _onActivityDetected(Activity activity) {
-    if (activity.type == ActivityType.WALKING) {
-      context.read<GoalBloc>().add(const ActivityDetected('Walking'));
-    } else if (activity.type == ActivityType.RUNNING) {
-      context.read<GoalBloc>().add(const ActivityDetected('Running'));
-    } else if (activity.type == ActivityType.ON_BICYCLE) {
-      context.read<GoalBloc>().add(const ActivityDetected('Cycling'));
-    }
-  }
-
-  @override
-  void dispose() {
-    _activitySubscription.cancel();
-    super.dispose();
-  }
+  static const double kMaxWalking = 10;
+  static const double kMaxRunning = 20;
+  static const double kMaxCycling = 50;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => GoalBloc(),
+      create: (_) => GoalBloc()..add(FetchGoalValues()),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Settings'),
-        ),
-        body: Column(
-          children: [
-            const SizedBox(height: 16),
-            _buildActivityDisplay(),
-            const SizedBox(height: 16),
-            _buildDistanceOptions(),
-          ],
+        appBar: AppBar(title: const Text('Settings')),
+        body: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: BlocBuilder<GoalBloc, GoalState>(
+            builder: (context, state) {
+              if (state.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state.error != null) {
+                return Center(child: Text('Error: ${state.error}'));
+              }
+              return Column(
+                children: [
+                  GoalSetter(
+                    currentValue: state.walkingValue,
+                    activity: kWalking,
+                    maxSliderValue: kMaxWalking,
+                  ),
+                  GoalSetter(
+                    currentValue: state.runningValue,
+                    activity: kRunning,
+                    maxSliderValue: kMaxRunning,
+                  ),
+                  GoalSetter(
+                    currentValue: state.cyclingValue,
+                    activity: kCycling,
+                    maxSliderValue: kMaxCycling,
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _buildActivityDisplay() {
-    return BlocBuilder<GoalBloc, GoalState>(
-      builder: (context, state) {
-        return Text('Detected Activity: ${state.detectedActivity ?? 'Waiting for activity...'}');
-      },
-    );
-  }
-
-  Widget _buildDistanceOptions() {
-    return BlocBuilder<GoalBloc, GoalState>(
-      builder: (context, state) {
-        final goal = state.detectedActivity != null ? state.goals[state.detectedActivity] : null;
-        return goal != null
-            ? Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Select distance for ${goal.activity}:'),
-            Wrap(
-              spacing: 8.0,
-              children: goal.distances.map((distance) {
-                return ChoiceChip(
-                  label: Text('$distance km'),
-                  selected: goal.selectedDistance == distance,
-                  onSelected: (selected) {
-                    context.read<GoalBloc>().add(SelectDistance(goal.activity, distance));
-                  },
-                );
-              }).toList(),
-            ),
-          ],
-        )
-            : const Center(child: Text('No activity detected.'));
-      },
     );
   }
 }
