@@ -45,5 +45,24 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSMotionUsageDescription</key>
+	<string>This application tracks your steps</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open.</string>
+	<key>GIDClientID</key>
+	<string>221211995503-o7k5r8lrdjn39ss3t5o1gfjt1t891nge.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.221211995503-o7k5r8lrdjn39ss3t5o1gfjt1t891nge</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
