@@ -68,3 +68,6 @@ ios/Runner/GoogleService-Info.plist
 
 # Build related
 pubspec.lock
+
+# Environment
+.env
