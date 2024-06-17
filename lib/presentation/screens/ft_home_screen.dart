@@ -1,42 +1,18 @@
-import 'package:fitness_tracker/presentation/screens/settings_page.dart';
+import 'package:fitness_tracker/presentation/screens/history_screen.dart';
+import 'package:fitness_tracker/presentation/widgets/map_widget.dart';
+import 'package:fitness_tracker/presentation/widgets/settings_icon_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/map_widget.dart';
-import '../widgets/settings_icon_widget.dart';
-import 'history_screen.dart';
-
-class FTApp extends StatelessWidget {
-  const FTApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      initialRoute: '/',
-      routes: {
-        // '/': (context) => const MyHomeScreen(title: 'Fitness Tracker',),
-        '/settings': (context) => const SettingsPage(),
-      },
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomeScreen(title: 'Fitness Tracker'),
-    );
-  }
-}
-
-class MyHomeScreen extends StatefulWidget {
-  const MyHomeScreen({super.key, required this.title});
+class FTHomeScreen extends StatefulWidget {
+  const FTHomeScreen({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomeScreen> createState() => _MyHomeScreenState();
+  State<FTHomeScreen> createState() => _FTHomeScreenState();
 }
 
-class _MyHomeScreenState extends State<MyHomeScreen> {
+class _FTHomeScreenState extends State<FTHomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = const [

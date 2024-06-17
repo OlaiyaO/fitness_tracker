@@ -1,3 +1,23 @@
+# Firebase service account and configuration files
+google-services.json
+GoogleService-Info.plist
+
+# Firebase SDK dependencies
+Pods/
+node_modules/
+functions/node_modules/
+
+# Firebase Emulator files
+.firebaserc
+firebase.json
+firebase-debug.log
+
+# Firebase Hosting deployment directory
+public/
+
+# Ignore Firebase options file
+firebase_options.dart
+
 # Miscellaneous
 *.class
 *.log

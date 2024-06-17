@@ -75,6 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '221211995503',
     projectId: 'ride-tag',
     storageBucket: 'ride-tag.appspot.com',
+    androidClientId: '221211995503-v03pn3dvs56i8q2ae6g24eibodjh91nb.apps.googleusercontent.com',
+    iosClientId: '221211995503-o7k5r8lrdjn39ss3t5o1gfjt1t891nge.apps.googleusercontent.com',
     iosBundleId: 'com.example.fitnessTracker',
   );
 
