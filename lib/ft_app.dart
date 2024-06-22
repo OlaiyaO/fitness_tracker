@@ -1,10 +1,11 @@
-
 import 'package:fitness_tracker/auth_gate.dart';
 import 'package:fitness_tracker/presentation/screens/settings_page.dart';
+import 'package:fitness_tracker/services/shared_preference_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../ft_app.dart';
-
+import 'blocs/slider_bloc/slider_bloc.dart';
+import 'blocs/slider_bloc/slider_event.dart';
 
 class FTApp extends StatelessWidget {
   const FTApp({super.key});
@@ -12,19 +13,27 @@ class FTApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      initialRoute: '/',
-      routes: {
-        // '/': (context) => const FTHomeScreen(title: 'Fitness Tracker',),
-        '/settings': (context) => const SettingsPage(),
-      },
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    final sharedPreferencesService = SharedPreferencesService();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              SliderBloc(sharedPreferencesService)..add(LoadSliderValues()),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        initialRoute: '/',
+        routes: {
+          // '/': (context) => const FTHomeScreen(title: 'Fitness Tracker',),
+          '/settings': (context) => const SettingsPage(),
+        },
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const AuthGate(),
       ),
-      home: const AuthGate(),
     );
   }
 }
-

@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:fitness_tracker/presentation/screens/ft_home_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'ft_app.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
