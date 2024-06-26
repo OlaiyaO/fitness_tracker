@@ -1,8 +1,10 @@
 import 'package:location/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-Future<void> getLocationUpdates(Function(LatLng) onLocationUpdated) async {
+Stream<LatLng> getLocationUpdates() async* {
   Location location = Location();
+
+  location.changeSettings(accuracy: LocationAccuracy.high);
 
   bool serviceEnabled;
   PermissionStatus permissionGranted;
@@ -23,10 +25,9 @@ Future<void> getLocationUpdates(Function(LatLng) onLocationUpdated) async {
     }
   }
 
-  location.onLocationChanged.listen((LocationData locationData) {
+  await for (final locationData in location.onLocationChanged) {
     if (locationData.longitude != null && locationData.latitude != null) {
-      LatLng currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
-      onLocationUpdated(currentPosition);
+      yield LatLng(locationData.latitude!, locationData.longitude!);
     }
-  });
+  }
 }

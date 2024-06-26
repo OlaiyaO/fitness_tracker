@@ -46,7 +46,7 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSMotionUsageDescription</key>
-	<string>This application tracks your steps</string>
+	<string>Used to recognize user activity information.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>processing</string>

@@ -41,7 +41,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final ButtonStyle style = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 20),
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),

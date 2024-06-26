@@ -15,10 +15,32 @@ class FTHomeScreen extends StatefulWidget {
 class _FTHomeScreenState extends State<FTHomeScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    MapWidget(),
-    HistoryScreen(),
-  ];
+  bool isDrawing = false;
+
+  final List<Widget> _screens = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _screens.add(MapWidget(
+      onStartButtonPressed: startDrawing,
+      onStopButtonPressed: stopDrawing,
+    ));
+    _screens.add(const HistoryScreen());
+  }
+
+  void startDrawing() {
+    setState(() {
+      isDrawing = true;
+    });
+  }
+
+  void stopDrawing() {
+    setState(() {
+      isDrawing = false;
+      // TODO: Add logic to send data to Firebase and update the history screen
+    });
+  }
 
   void _onTabTapped(int index) {
     setState(() {
@@ -51,13 +73,6 @@ class _FTHomeScreenState extends State<FTHomeScreen> {
           ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: _currentIndex == 0 ? FloatingActionButton.extended(
-        onPressed: () {
-        },
-        label: const Text('Start'),
-        icon: const Icon(Icons.not_started_outlined),
-      ) : null,
     );
   }
 }
