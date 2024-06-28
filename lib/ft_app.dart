@@ -22,6 +22,7 @@ class FTApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         initialRoute: '/',
         routes: {

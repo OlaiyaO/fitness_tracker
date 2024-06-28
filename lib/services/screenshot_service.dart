@@ -10,17 +10,6 @@ class ScreenshotService {
 
   Future<Uint8List?> captureScreenshot(GlobalKey key) async {
     try {
-      // RenderRepaintBoundary boundary =
-      //     key.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      // if (boundary.debugNeedsPaint) {
-      //   await Future.delayed(const Duration(milliseconds: 20));
-      //   return captureScreenshot(key);
-      // }
-      // final image = await boundary.toImage(pixelRatio: 2.0);
-      // final byteData = await image.toByteData(format: ImageByteFormat.png);
-      // return byteData?.buffer.asUint8List();
-
-      // Using ScreenshotController to capture the screenshot
       return await _screenshotController.captureFromWidget(
         RepaintBoundary(
           key: key,
