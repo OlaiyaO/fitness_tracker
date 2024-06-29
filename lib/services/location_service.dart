@@ -1,33 +1,45 @@
 import 'package:location/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-Stream<LatLng> getLocationUpdates() async* {
-  Location location = Location();
+class LocationService {
+  final Location _location = Location();
 
-  location.changeSettings(accuracy: LocationAccuracy.high);
+  Future<void> checkServiceAndPermission() async {
+    await _requestService();
+    await _requestPermission();
+  }
 
-  bool serviceEnabled;
-  PermissionStatus permissionGranted;
-
-  serviceEnabled = await location.serviceEnabled();
-  if (!serviceEnabled) {
-    serviceEnabled = await location.requestService();
+  Future<bool> _requestService() async {
+    bool serviceEnabled = await _location.serviceEnabled();
     if (!serviceEnabled) {
-      return;
+      serviceEnabled = await _location.requestService();
+      if (!serviceEnabled) {
+        return false;
+      }
     }
+    return true;
   }
 
-  permissionGranted = await location.hasPermission();
-  if (permissionGranted == PermissionStatus.denied) {
-    permissionGranted = await location.requestPermission();
-    if (permissionGranted != PermissionStatus.granted) {
-      return;
+  Future<bool> _requestPermission() async {
+    PermissionStatus permissionGranted = await _location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await _location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return false;
+      }
     }
+    return true;
   }
 
-  await for (final locationData in location.onLocationChanged) {
-    if (locationData.longitude != null && locationData.latitude != null) {
-      yield LatLng(locationData.latitude!, locationData.longitude!);
+  Stream<LatLng> getLocationUpdates() async* {
+    await checkServiceAndPermission();
+
+    _location.changeSettings(accuracy: LocationAccuracy.high);
+
+    await for (final locationData in _location.onLocationChanged) {
+      if (locationData.latitude != null && locationData.longitude != null) {
+        yield LatLng(locationData.latitude!, locationData.longitude!);
+      }
     }
   }
 }
