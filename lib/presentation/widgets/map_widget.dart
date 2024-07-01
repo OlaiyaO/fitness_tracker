@@ -1,18 +1,19 @@
 import 'dart:async';
 
+import 'package:fitness_tracker/services/activity_tracker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 import '../../services/location_service.dart';
 import '../../utils/kalman_filter.dart';
 
 class MapWidget extends StatefulWidget {
-  const MapWidget(
-      {super.key,
-      required this.onStartButtonPressed,
-      required this.onStopButtonPressed});
+  const MapWidget({
+    super.key,
+    required this.onStartButtonPressed,
+    required this.onStopButtonPressed,
+  });
 
   final VoidCallback onStartButtonPressed;
   final VoidCallback onStopButtonPressed;
@@ -25,30 +26,38 @@ class MapWidgetState extends State<MapWidget> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
   final LocationService _locationService = LocationService();
+  final ActivityTracker _activityTracker = ActivityTracker();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(8.21930, 5.50660),
     zoom: 15,
   );
 
-  // static const LatLng _kTitcombCollege = LatLng(8.21221, 5.52004);
   static const LatLng _kAlayaJunction = LatLng(8.21930, 5.50660);
 
   LatLng? currentPosition;
   List<LatLng> polylineCoordinates = [];
   bool isDrawing = false;
 
-  StreamSubscription<LocationData>? locationSubscription;
-  late KalmanLatLng kalmanLatLng;
+  StreamSubscription<LatLng>? locationSubscription;
+  KalmanLatLng? kalmanLatLng;
+
+  @override
+  void initState() {
+    super.initState();
+    kalmanLatLng = KalmanLatLng();
+  }
 
   void startDrawing() {
     setState(() {
       isDrawing = true;
     });
+    _activityTracker.startTracking();
+    widget.onStartButtonPressed();
     locationSubscription =
         _locationService.getLocationUpdates().listen((LatLng newPosition) {
-      if (mounted) {
-        LatLng filteredPosition = kalmanLatLng.filter(newPosition);
+      if (kalmanLatLng != null && mounted) {
+        LatLng filteredPosition = kalmanLatLng!.filter(newPosition);
         setState(() {
           currentPosition = filteredPosition;
           polylineCoordinates.add(filteredPosition);
@@ -57,7 +66,7 @@ class MapWidgetState extends State<MapWidget> {
           }
         });
       }
-    }) as StreamSubscription<LocationData>?;
+    });
   }
 
   void stopDrawing() {
@@ -65,6 +74,7 @@ class MapWidgetState extends State<MapWidget> {
     setState(() {
       isDrawing = false;
     });
+    _activityTracker.stopTracking(); // Stop tracking activities
     widget.onStopButtonPressed();
   }
 
@@ -78,14 +88,16 @@ class MapWidgetState extends State<MapWidget> {
   Widget build(BuildContext context) {
     Set<Marker> markers = {
       const Marker(
-          markerId: MarkerId("_startingLocation"),
-          icon: BitmapDescriptor.defaultMarker,
-          position: _kAlayaJunction),
+        markerId: MarkerId("_startingLocation"),
+        icon: BitmapDescriptor.defaultMarker,
+        position: _kAlayaJunction,
+      ),
       if (currentPosition != null)
         Marker(
-            markerId: const MarkerId("_currentLocation"),
-            icon: BitmapDescriptor.defaultMarker,
-            position: currentPosition!),
+          markerId: const MarkerId("_currentLocation"),
+          icon: BitmapDescriptor.defaultMarker,
+          position: currentPosition!,
+        ),
     };
 
     Set<Polyline> polylines = {

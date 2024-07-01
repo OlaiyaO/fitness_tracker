@@ -1,4 +1,5 @@
 import 'package:fitness_tracker/auth_gate.dart';
+import 'package:fitness_tracker/presentation/screens/activity_summary_screen.dart';
 import 'package:fitness_tracker/presentation/screens/settings_page.dart';
 import 'package:fitness_tracker/services/shared_preference_service.dart';
 import 'package:flutter/material.dart';
