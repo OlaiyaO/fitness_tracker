@@ -1,85 +1,91 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 
 class ActivitySession {
-  final double walkingDistance;
-  final double runningDistance;
-  final double cyclingDistance;
-  final Duration walkingTime;
-  final Duration runningTime;
-  final Duration cyclingTime;
+  final String? localPath;
+  final String? imageUrl;
+  final double distance;
+  final DateTime date;
   final int steps;
-  final DateTime startTime;
-  final DateTime endTime;
+  final TimeOfDay startTime;
+  final TimeOfDay endTime;
 
   ActivitySession({
-    required this.walkingDistance,
-    required this.runningDistance,
-    required this.cyclingDistance,
-    required this.walkingTime,
-    required this.runningTime,
-    required this.cyclingTime,
+    this.localPath,
+    this.imageUrl,
+    required this.distance,
+    required this.date,
     required this.steps,
     required this.startTime,
     required this.endTime,
   });
 
   Map<String, dynamic> toMap() {
+    final dateFormatter = DateFormat('yyyy-MM-dd');
     return {
-      'walkingDistance': walkingDistance,
-      'runningDistance': runningDistance,
-      'cyclingDistance': cyclingDistance,
-      'walkingTime': walkingTime.inSeconds,
-      'runningTime': runningTime.inSeconds,
-      'cyclingTime': cyclingTime.inSeconds,
+      'localPath': localPath,
+      'imageUrl': imageUrl,
+      'distance': distance,
+      'date': dateFormatter.format(date),
       'steps': steps,
-      'startTime': startTime.toIso8601String(),
-      'endTime': endTime.toIso8601String(),
+      'startTime':
+          '${startTime.hour}:${startTime.minute} ${startTime.period.toString().split('.').last}',
+      'endTime':
+          '${endTime.hour}:${endTime.minute} ${endTime.period.toString().split('.').last}',
     };
   }
 
   static ActivitySession fromMap(Map<String, dynamic> map) {
     return ActivitySession(
-      walkingDistance: map['walkingDistance'],
-      runningDistance: map['runningDistance'],
-      cyclingDistance: map['cyclingDistance'],
-      walkingTime: Duration(seconds: map['walkingTime']),
-      runningTime: Duration(seconds: map['runningTime']),
-      cyclingTime: Duration(seconds: map['cyclingTime']),
+      localPath: map['localPath'],
+      imageUrl: map['imageUrl'],
+      distance: map['distance'],
+      date: DateTime.parse(map['date']),
       steps: map['steps'],
-      startTime: DateTime.parse(map['startTime']),
-      endTime: DateTime.parse(map['endTime']),
+      startTime: parseTimeOfDay(map['startTime']),
+      endTime: parseTimeOfDay(map['endTime']),
     );
   }
 
   Map<String, dynamic> toJson() {
+    final dateFormatter = DateFormat('yyyy-MM-dd');
     return {
-      'walkingDistance': walkingDistance,
-      'runningDistance': runningDistance,
-      'cyclingDistance': cyclingDistance,
-      'walkingTime': walkingTime.inSeconds,
-      'runningTime': runningTime.inSeconds,
-      'cyclingTime': cyclingTime.inSeconds,
+      'localPath': localPath,
+      'imageUrl': imageUrl,
+      'distance': distance,
+      'date': dateFormatter.format(date),
       'steps': steps,
-      'startTime': startTime.toIso8601String(),
-      'endTime': endTime.toIso8601String(),
+      'startTime':
+          '${startTime.hour}:${startTime.minute} ${startTime.period.toString().split('.').last}',
+      'endTime':
+          '${endTime.hour}:${endTime.minute} ${endTime.period.toString().split('.').last}',
     };
   }
 
   static ActivitySession fromJson(Map<String, dynamic> json) {
     return ActivitySession(
-      walkingDistance: json['walkingDistance'],
-      runningDistance: json['runningDistance'],
-      cyclingDistance: json['cyclingDistance'],
-      walkingTime: Duration(seconds: json['walkingTime']),
-      runningTime: Duration(seconds: json['runningTime']),
-      cyclingTime: Duration(seconds: json['cyclingTime']),
+      localPath: json['loccalPath'],
+      imageUrl: json['imageUrl'],
+      distance: json['distance'],
+      date: DateTime.parse(json['date']),
       steps: json['steps'],
-      startTime: DateTime.parse(json['startTime']),
-      endTime: DateTime.parse(json['endTime']),
+      startTime: parseTimeOfDay(json['startTime']),
+      endTime: parseTimeOfDay(json['endTime']),
     );
   }
 
-  Future<void> saveToFirestore() async {
-    await FirebaseFirestore.instance.collection('activitySessions').add(toMap());
+  static TimeOfDay parseTimeOfDay(String timeString) {
+    final format = RegExp(r'(\d+):(\d+) (AM|PM)');
+    final match = format.firstMatch(timeString);
+    if (match != null) {
+      final hours = int.parse(match.group(1)!);
+      final minutes = int.parse(match.group(2)!);
+      final period = match.group(3)!;
+      final hour24 = (period == 'PM' && hours != 12) ? hours + 12 : hours;
+      return TimeOfDay(hour: hour24, minute: minutes);
+    }
+    return const TimeOfDay(
+        hour: 0, minute: 0); // Default value in case of error
   }
 }

@@ -1,7 +1,10 @@
 import 'package:location/location.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../utils/kalman_filter.dart';
+
 class LocationService {
+  final KalmanLatLng _kalmanLatLng = KalmanLatLng();
   final Location _location = Location();
 
   Future<void> checkServiceAndPermission() async {
@@ -31,15 +34,28 @@ class LocationService {
     return true;
   }
 
-  Stream<LatLng> getLocationUpdates() async* {
+  Future<LocationData?> getCurrentLocation() async {
+    try {
+      return await _location.getLocation();
+    } catch (e) {
+      print("Error getting current location: $e");
+      return null;
+    }
+  }
+
+  Stream<LocationData> getLocationUpdates() async* {
     await checkServiceAndPermission();
 
     _location.changeSettings(accuracy: LocationAccuracy.high);
 
     await for (final locationData in _location.onLocationChanged) {
       if (locationData.latitude != null && locationData.longitude != null) {
-        yield LatLng(locationData.latitude!, locationData.longitude!);
+        yield locationData;
       }
     }
+  }
+  LatLng filterLocation(LocationData locationData) {
+    LatLng newPosition = LatLng(locationData.latitude!, locationData.longitude!);
+    return _kalmanLatLng.filter(newPosition);
   }
 }

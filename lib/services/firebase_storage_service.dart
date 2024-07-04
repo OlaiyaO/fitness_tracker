@@ -4,14 +4,16 @@ import 'package:firebase_storage/firebase_storage.dart';
 class FirebaseStorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Future<String?> uploadScreenshot(Uint8List imageBytes, String fileName) async {
+  Future<String?> uploadScreenshotToFirebase(Uint8List imageBytes, String fileName) async {
     try {
-      final Reference ref = _storage.ref().child('screenshots/$fileName.png');
-      final UploadTask uploadTask = ref.putData(imageBytes);
-      final TaskSnapshot snapshot = await uploadTask;
-      return await snapshot.ref.getDownloadURL();
+      Reference ref = _storage.ref().child('screenshots').child('$fileName.png');
+      UploadTask uploadTask = ref.putData(imageBytes);
+      TaskSnapshot downloadUrl = await uploadTask.whenComplete(() {});
+      String url = await downloadUrl.ref.getDownloadURL();
+      print('Screenshot uploaded to Firebase: $url');
+      return url;
     } catch (e) {
-      print('Error uploading image to Firebase Storage: $e');
+      print('Error uploading screenshot to Firebase: $e');
       return null;
     }
   }

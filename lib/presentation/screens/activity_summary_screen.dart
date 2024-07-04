@@ -1,61 +1,144 @@
-import 'package:fitness_tracker/data/models/activity_session_model.dart';
+import 'dart:io';
+
+import 'package:fitness_tracker/utils/duration_calculation.dart';
 import 'package:flutter/material.dart';
 
 class ActivitySummaryScreen extends StatelessWidget {
-  final Image mapImage;
-  final ActivitySession session;
+  final String? localPath;
+  final String? imageUrl;
+  final DateTime date;
+  final TimeOfDay startTime;
+  final int steps;
+  final TimeOfDay endTime;
+  final double distance;
 
   const ActivitySummaryScreen({
     super.key,
-    required this.mapImage,
-    required this.session,
+    this.localPath,
+    this.imageUrl,
+    required this.date,
+    required this.startTime,
+    required this.steps,
+    required this.endTime,
+    required this.distance,
   });
 
   @override
   Widget build(BuildContext context) {
+    Duration duration = calculateDuration(endTime, startTime);
+    final primaryColor = Theme.of(context).colorScheme.primaryContainer;
+    final textColor = Theme.of(context).colorScheme.onPrimaryContainer;
+
+    int hours = duration.inHours;
+    int minutes = duration.inMinutes % 60;
+    int seconds = duration.inSeconds % 60;
+
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true, // Extends the body behind the AppBar
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: Icon(
+            Icons.close,
+            color: textColor,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text(
+        title: Text(
           'Activity Details',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: textColor),
         ),
-        backgroundColor: Colors.black.withOpacity(0.5),
-        elevation: 0,
+        backgroundColor: primaryColor,
+        // Semi-transparent AppBar
+        elevation: 24,
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: mapImage),
+          localPath != null
+              ? Positioned.fill(child: Image.file(File('$localPath')))
+              : Positioned.fill(child: Image.network('$imageUrl')),
+          // Fills the available space with the image
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                  color: primaryColor,
+                  borderRadius: const BorderRadius.horizontal(
+                      right: Radius.circular(24), left: Radius.circular(24))),
+              padding: const EdgeInsets.only(
+                  left: 16.0, right: 16.0, bottom: 40, top: 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildDataRow('Walking Distance:',
-                      '${session.walkingDistance.toStringAsFixed(2)} km'),
-                  _buildDataRow('Running Distance:',
-                      '${session.runningDistance.toStringAsFixed(2)} km'),
-                  _buildDataRow('Cycling Distance:',
-                      '${session.cyclingDistance.toStringAsFixed(2)} km'),
-                  _buildDataRow(
-                      'Total Time:',
-                      _formatDuration(session.walkingTime +
-                          session.runningTime +
-                          session.cyclingTime)),
-                  _buildDataRow('Steps:', '${session.steps}'),
-                  _buildDataRow(
-                      'Start Time:', _formatDateTime(session.startTime)),
-                  _buildDataRow('End Time:', _formatDateTime(session.endTime)),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Distance:',
+                          style: TextStyle(color: textColor),
+                        ),
+                        Text('${distance.floorToDouble() / 1000} km',
+                            style: TextStyle(
+                                color: textColor,
+                                fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Duration:', style: TextStyle(color: textColor)),
+                        Text('$hours hrs $minutes mins $seconds secs',
+                            style: TextStyle(color: textColor, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Steps:', style: TextStyle(color: textColor)),
+                        Text('$steps steps',
+                            style: TextStyle(
+                                color: textColor,
+                                fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Start Time:',
+                            style: TextStyle(color: textColor)),
+                        Text(startTime.format(context),
+                            style: TextStyle(
+                                color: textColor,
+                                fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Date:', style: TextStyle(color: textColor)),
+                        Text(date.toIso8601String().split('T').first,
+                            style: TextStyle(
+                                color: textColor,
+                                fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -63,23 +146,5 @@ class ActivitySummaryScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Widget _buildDataRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label),
-        Text(value),
-      ],
-    );
-  }
-
-  String _formatDuration(Duration duration) {
-    return '${duration.inHours}h ${duration.inMinutes.remainder(60)}m';
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}';
   }
 }
